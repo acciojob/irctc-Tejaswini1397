@@ -158,7 +158,7 @@ public class TrainService {
            if(train.getRoute().contains(station.name())){
                if(train.getDepartureTime().equals(startTime) && train.getDepartureTime().isBefore(endTime)){
                    count++;
-                   lis.add(count);
+                   lis.add(train.getTrainId());
                }
                }
            }
