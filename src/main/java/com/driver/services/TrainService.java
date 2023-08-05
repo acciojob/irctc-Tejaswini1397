@@ -128,8 +128,24 @@ public class TrainService {
         //You can assume that the date change doesn't need to be done ie the travel will certainly happen with the same date (More details
         //in problem statement)
         //You can also assume the seconds and milli seconds value will be 0 in a LocalTime format.
+        List<Integer> passingTrains = new ArrayList<>();
 
-        return null;
+        // Iterate through the list of trains
+        for (Train train : trainRepository.findAll()) {
+            // Check if the station is present in the train's route
+            if (train.getRoute().contains(station.name())) {
+                // Check if the departure time lies within the given time frame
+                if (isTimeWithinRange(train.getDepartureTime(), startTime, endTime)) {
+                    passingTrains.add(train.getTrainId());
+                }
+            }
+        }
+
+        return passingTrains;
+
+    }
+    private boolean isTimeWithinRange(LocalTime time, LocalTime startTime, LocalTime endTime) {
+        return !time.isBefore(startTime) && !time.isAfter(endTime);
     }
 
 }
