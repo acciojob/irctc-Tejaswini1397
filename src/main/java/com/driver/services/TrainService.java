@@ -51,32 +51,7 @@ public class TrainService {
         //We need to find out the available seats between the given 2 stations.
         Train train = trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).orElse(null);
 
-        if (train == null) {
-            // Handle the case when the train is not found
-            return -1;
-        }
-
-        int totalSeats = train.getNoOfSeats();
-        List<Station> route = Arrays.stream(train.getRoute().split(","))
-                .map(Station::valueOf)
-                .collect(Collectors.toList());
-
-        int boardingIndex = route.indexOf(seatAvailabilityEntryDto.getFromStation());
-        int destinationIndex = route.indexOf(seatAvailabilityEntryDto.getToStation());
-
-        if (boardingIndex == -1 || destinationIndex == -1 || boardingIndex >= destinationIndex) {
-            // Handle the case when invalid stations are provided or the boarding station is after the destination station
-            return -1;
-        }
-
-        int bookedSeats = 0;
-        for (int i = boardingIndex; i < destinationIndex; i++) {
-            Station station = route.get(i);
-            bookedSeats +=train.getNoOfSeats();
-          //  bookedSeats += calculatePeopleBoardingAtAStation(train.getTrainId(), station);
-        }
-
-        return totalSeats - bookedSeats;
+       return 0 ;
 
     }
 
@@ -138,24 +113,17 @@ public class TrainService {
         //You can assume that the date change doesn't need to be done ie the travel will certainly happen with the same date (More details
         //in problem statement)
         //You can also assume the seconds and milli seconds value will be 0 in a LocalTime format.
-        List<Integer> passingTrains = new ArrayList<>();
-
-        // Iterate through the list of trains
-        for (Train train : trainRepository.findAll()) {
-            // Check if the station is present in the train's route
-            if (train.getRoute().contains(station.name())) {
-                // Check if the departure time lies within the given time frame
-                if (isTimeWithinRange(train.getDepartureTime(), startTime, endTime)) {
-                    passingTrains.add(train.getTrainId());
-                }
-            }
-        }
-
-        return passingTrains;
-
-    }
-    private boolean isTimeWithinRange(LocalTime time, LocalTime startTime, LocalTime endTime) {
-        return !time.isBefore(startTime) && !time.isAfter(endTime);
-    }
+        int count=0;
+       List<Integer>lis=new ArrayList<>();
+       for(Train train:trainRepository.findAll()){
+           if(train.getRoute().contains(station.name())){
+               if(train.getDepartureTime().equals(startTime) && train.getDepartureTime().isBefore(endTime)){
+                   count++;
+                   lis.add(count);
+               }
+               }
+           }
+       return lis;
+       }
 
 }
