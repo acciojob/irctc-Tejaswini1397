@@ -100,16 +100,14 @@ public class TrainService {
         //Throughout the journey of the train between any 2 stations
         //We need to find out the age of the oldest person that is travelling the train
         //If there are no people travelling in that train you can return 0
-        Train train = trainRepository.findById(trainId)
-                .orElseThrow(() -> new IllegalArgumentException("Train not found"));
+        Train train = trainRepository.findById(trainId).get();
 
         // Initialize the oldest person's age to 0
         int oldestAge = 0;
 
         // Iterate through the tickets to find the oldest person's age
         for (Ticket ticket : train.getBookedTickets()) {
-            List<Passenger>list=ticket.getPassengersList();
-            Passenger passenger = list.get(ticket.getTicketId());
+            Passenger passenger = ticket.getPassengersList().get(trainId);
             if (passenger != null) {
                 int passengerAge = passenger.getAge();
                 if (passengerAge > oldestAge) {
