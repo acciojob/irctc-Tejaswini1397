@@ -110,7 +110,7 @@ public class TrainService {
         }
 
         // Calculate the number of people boarding at the given station
-        int boardingPeopleCount = 0;
+        int boardingPeopleCount = 1;
         for (Ticket ticket : train.getBookedTickets()) {
             if (ticket.getFromStation().equals(station)) {
                 boardingPeopleCount++;
