@@ -88,7 +88,7 @@ public class TrainService {
         }
 
         // Step 4: Calculate the available seats count
-        int availableSeats = totalSeats - bookedSeatsBetweenStations;
+        int availableSeats = totalSeats - bookedSeatsBetweenStations-bookedTickets.size();
 
         return availableSeats;
 
