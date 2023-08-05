@@ -65,7 +65,7 @@ public class TrainService {
 
         int availableSeats = totalSeats - bookedSeats;
         return availableSeats;
-    }
+
     }
 
     public Integer calculatePeopleBoardingAtAStation(Integer trainId,Station station) throws Exception{
