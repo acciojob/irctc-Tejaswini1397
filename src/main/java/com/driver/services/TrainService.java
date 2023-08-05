@@ -51,7 +51,46 @@ public class TrainService {
         //We need to find out the available seats between the given 2 stations.
         Train train = trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).orElse(null);
 
-       return 0 ;
+        if (train == null) {
+            // Handle train not found scenario
+            return -1;
+        }
+
+        // Step 1: Find the total number of seats available on the train
+        int totalSeats = train.getNoOfSeats();
+
+        // Step 2: Get the list of booked tickets for the train
+        List<Ticket> bookedTickets = train.getBookedTickets();
+
+        // Step 3: Calculate the number of seats booked between boarding and destination stations
+        List<String> stations = Arrays.asList(train.getRoute().split(","));
+        Station boardingStation = seatAvailabilityEntryDto.getFromStation();
+        Station destinationStation = seatAvailabilityEntryDto.getToStation();
+
+        int boardingIndex = stations.indexOf(boardingStation.name());
+        int destinationIndex = stations.indexOf(destinationStation.name());
+
+//        if (boardingIndex == -1 || destinationIndex == -1 || boardingIndex >= destinationIndex) {
+//            // Invalid stations or boarding station is after or equal to destination station
+//            throw new Exception("Invalid stations");
+//        }
+
+        int bookedSeatsBetweenStations = 0;
+
+        for (Ticket ticket : bookedTickets) {
+            int ticketBoardingIndex = stations.indexOf(ticket.getFromStation());
+            int ticketDestinationIndex = stations.indexOf(ticket.getToStation());
+
+            if (ticketBoardingIndex >= boardingIndex && ticketDestinationIndex <= destinationIndex) {
+                // Ticket's boarding and destination stations are within the given range
+                bookedSeatsBetweenStations++;
+            }
+        }
+
+        // Step 4: Calculate the available seats count
+        int availableSeats = totalSeats - bookedSeatsBetweenStations;
+
+        return availableSeats;
 
     }
 
