@@ -39,7 +39,7 @@ public class TrainService {
         return trainSaved.getTrainId();
     }
 
-    public Integer calculateAvailableSeats(SeatAvailabilityEntryDto seatAvailabilityEntryDto) throws Exception {
+    public Integer calculateAvailableSeats(SeatAvailabilityEntryDto seatAvailabilityEntryDto){
 
         //Calculate the total seats available
         //Suppose the route is A B C D
@@ -72,8 +72,8 @@ public class TrainService {
         int bookedSeats = 0;
         for (int i = boardingIndex; i < destinationIndex; i++) {
             Station station = route.get(i);
-            bookedSeats += calculatePeopleBoardingAtAStation(train.getTrainId(), station);
-            bookedSeats += calculatePeopleBoardingAtAStation(train.getTrainId(), station);
+            bookedSeats +=train.getNoOfSeats();
+          //  bookedSeats += calculatePeopleBoardingAtAStation(train.getTrainId(), station);
         }
 
         return totalSeats - bookedSeats;
