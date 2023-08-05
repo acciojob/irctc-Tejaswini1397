@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ public class TrainService {
         return trainSaved.getTrainId();
     }
 
-    public Integer calculateAvailableSeats(SeatAvailabilityEntryDto seatAvailabilityEntryDto){
+    public Integer calculateAvailableSeats(SeatAvailabilityEntryDto seatAvailabilityEntryDto) throws Exception {
 
         //Calculate the total seats available
         //Suppose the route is A B C D
@@ -48,23 +49,34 @@ public class TrainService {
         //even if that seat is booked post the destStation or before the boardingStation
         //Inshort : a train has totalNo of seats and there are tickets from and to different locations
         //We need to find out the available seats between the given 2 stations.
-        Train train=trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).get();
+        Train train = trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).orElse(null);
 
-        String sourceStation = seatAvailabilityEntryDto.getFromStation().name();
-        String destinationStation = seatAvailabilityEntryDto.getToStation().name();
-        String route = sourceStation + "," + destinationStation;
+        if (train == null) {
+            // Handle the case when the train is not found
+            return -1;
+        }
 
-        // Get the list of tickets that match the route and trainId
-        List<Ticket> bookedTickets = train.getBookedTickets().stream()
-                .filter(ticket -> ticket.getTrain().getRoute().contains(route))
+        int totalSeats = train.getNoOfSeats();
+        List<Station> route = Arrays.stream(train.getRoute().split(","))
+                .map(Station::valueOf)
                 .collect(Collectors.toList());
 
-        // Calculate the total seats available
-        int totalSeats = train.getNoOfSeats();
-        int bookedSeats = bookedTickets.size();
+        int boardingIndex = route.indexOf(seatAvailabilityEntryDto.getFromStation());
+        int destinationIndex = route.indexOf(seatAvailabilityEntryDto.getToStation());
 
-        int availableSeats = totalSeats - bookedSeats;
-        return availableSeats;
+        if (boardingIndex == -1 || destinationIndex == -1 || boardingIndex >= destinationIndex) {
+            // Handle the case when invalid stations are provided or the boarding station is after the destination station
+            return -1;
+        }
+
+        int bookedSeats = 0;
+        for (int i = boardingIndex; i < destinationIndex; i++) {
+            Station station = route.get(i);
+            bookedSeats += calculatePeopleBoardingAtAStation(train.getTrainId(), station);
+            bookedSeats += calculatePeopleBoardingAtAStation(train.getTrainId(), station);
+        }
+
+        return totalSeats - bookedSeats;
 
     }
 
