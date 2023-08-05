@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TrainService {
@@ -26,7 +27,15 @@ public class TrainService {
         //and route String logic to be taken from the Problem statement.
         //Save the train and return the trainId that is generated from the database.
         //Avoid using the lombok library
-        return null;
+        String route = trainEntryDto.getStationRoute().stream()
+                .map(Enum::name)
+                .collect(Collectors.joining(","));
+        Train train=new Train();
+        train.setRoute(route);
+        train.setDepartureTime(trainEntryDto.getDepartureTime());
+        Train trainSaved=trainRepository.save(train);
+
+        return trainSaved.getTrainId();
     }
 
     public Integer calculateAvailableSeats(SeatAvailabilityEntryDto seatAvailabilityEntryDto){
