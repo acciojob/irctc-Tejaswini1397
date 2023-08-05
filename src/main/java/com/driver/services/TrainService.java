@@ -74,9 +74,25 @@ public class TrainService {
         //if the trainId is not passing through that station
         //throw new Exception("Train is not passing from this station");
         //  in a happy case we need to find out the number of such people.
+        // Find the train by trainId
+        Train train = trainRepository.findById(trainId).get();
 
+        // Check if the station is present in the route
+        String stationName = station.name();
+        if (!train.getRoute().contains(stationName)) {
+            throw new Exception("Train is not passing from this station");
+        }
 
-        return 0;
+        // Calculate the number of people boarding at the given station
+        int boardingPeopleCount = 0;
+        for (Ticket ticket : train.getBookedTickets()) {
+            if (ticket.getFromStation().equals(station)) {
+                boardingPeopleCount++;
+            }
+        }
+
+        return boardingPeopleCount;
+
     }
 
     public Integer calculateOldestPersonTravelling(Integer trainId){
@@ -84,8 +100,25 @@ public class TrainService {
         //Throughout the journey of the train between any 2 stations
         //We need to find out the age of the oldest person that is travelling the train
         //If there are no people travelling in that train you can return 0
+        Train train = trainRepository.findById(trainId)
+                .orElseThrow(() -> new IllegalArgumentException("Train not found"));
 
-        return 0;
+        // Initialize the oldest person's age to 0
+        int oldestAge = 0;
+
+        // Iterate through the tickets to find the oldest person's age
+        for (Ticket ticket : train.getBookedTickets()) {
+            List<Passenger>list=ticket.getPassengersList();
+            Passenger passenger = list.get(ticket.getTicketId());
+            if (passenger != null) {
+                int passengerAge = passenger.getAge();
+                if (passengerAge > oldestAge) {
+                    oldestAge = passengerAge;
+                }
+            }
+        }
+
+        return oldestAge;
     }
 
     public List<Integer> trainsBetweenAGivenTime(Station station, LocalTime startTime, LocalTime endTime){
