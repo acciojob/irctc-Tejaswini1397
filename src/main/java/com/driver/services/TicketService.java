@@ -49,7 +49,7 @@ public class TicketService {
        }
        int totalSeats=train.getNoOfSeats();
        int bookedTickets=train.getBookedTickets().size();
-       if(bookedTickets>=totalSeats){
+       if(bookedTickets>totalSeats){
            throw new Exception("Less tickets are available");
        }
        String boardingStation=bookTicketEntryDto.getFromStation().name();
